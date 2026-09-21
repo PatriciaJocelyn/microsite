@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Managed Linktree</title>
+    <style>
+        :root {
+            --bg-body: #e5e7eb;
+            --card-bg: #ffffff;
+            --text-main: #000000;
+            --text-sub: #1a1a1a;
+            --btn-bg: #2d3135;
+            --btn-text: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .linktree-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 430px;
+            border-radius: 40px;
+            padding: 50px 24px;
+            box-sizing: border-box;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .profile-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .profile-img {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+        .username { font-size: 1.35rem; font-weight: 700; margin: 0 0 10px 0; }
+        .bio { font-size: 0.95rem; color: var(--text-sub); margin: 0; }
+        
+        .links-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .link-item {
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .spacer { width: 10px; visibility: hidden; }
+        .link-text { flex-grow: 1; text-align: center; }
+        .menu-dots { font-size: 1.2rem; color: rgba(255, 255, 255, 0.6); }
+
+        /* Admin Controls Styling */
+        .auth-bar {
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .auth-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .admin-panel {
+            display: none; /* Hidden by default until logged in */
+            background: #f3f4f6;
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        .admin-panel input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .admin-panel button {
+            background-color: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="linktree-container">
+        <div class="profile-section">
+            <img class="profile-img" src="profile.jpg" alt="Profile Picture">
+            <h1 class="username">@patriciajocelyn</h1>
+            <p class="bio">Live, Laugh, Love</p>
+        </div>
+
+        <div class="links-wrapper" id="links-list"></div>
+        <div class="footer-logo">Linktree<span>*</span></div>
+    </div>
+
+    <!-- Login/Logout Utility Footer -->
+    <div class="auth-bar">
+        <button id="auth-action-btn" class="auth-btn" onclick="handleAuthClick()">Admin Login</button>
+    </div>
+
+    <!-- Hidden Management Panel (Only displays after logging in) -->
+    <div id="admin-panel" class="admin-panel">
+        <h3>Add a New Link</h3>
+        <label>Link Title:</label>
+        <input type="text" id="new-link-title" placeholder="e.g., Follow my Instagram">
+        
+        <label>URL Link:</label>
+        <input type="url" id="new-link-url" placeholder="https://...">
+        
+        <button onclick="addNewLink()">➕ Add Link to Page</button>
+    </div>
+
+    <script>
+        // Local temporary storage simulation (Saves your links in the browser)
+        let myLinks = JSON.parse(localStorage.getItem('savedLinks')) || [
+            { text: "My Youtube", url: "youtube.com" },
+            { text: "My Instagram", url: "instagram.com" }
+        ];
+
+        let isLoggedIn = false;
+
+        function renderLinks() {
+            const container = document.getElementById("links-list");
+            container.innerHTML = "";
+            myLinks.forEach(link => {
+                const a = document.createElement("a");
+                a.href = link.url;
+                a.className = "link-item";
+                a.target = "_blank";
+                a.innerHTML = `<div class="spacer"></div><span class="link-text">${link.text}</span><span class="menu-dots">⋮</span>`;
+                container.appendChild(a);
+            });
+        }
+
+        function handleAuthClick() {
+            if (!isLoggedIn) {
+                // Prompt for password (Simulated secure database verification check)
+                let password = prompt("Enter your Admin Password:");
+                if (password === "12345") { // You can change this temporary password line
+                    isLoggedIn = true;
+                    document.getElementById("auth-action-btn").textContent = "Log Out";
+                    document.getElementById("admin-panel").style.display = "block";
+                    alert("Logged in successfully!");
+                } else {
+                    alert("Incorrect password!");
+                }
+            } else {
+                isLoggedIn = false;
+                document.getElementById("auth-action-btn").textContent = "Admin Login";
+                document.getElementById("admin-panel").style.display = "none";
+                alert("Logged out successfully!");
+            }
+        }
+
+        function addNewLink() {
+            const titleInput = document.getElementById("new-link-title");
+            const urlInput = document.getElementById("new-link-url");
+
+            if (titleInput.value && urlInput.value) {
+                myLinks.push({ text: titleInput.value, url: urlInput.value });
+                localStorage.setItem('savedLinks', JSON.stringify(myLinks)); // Saves to browser memory
+                renderLinks();
+                
+                // Clear the form fields
+                titleInput.value = "";
+                urlInput.value = "";
+            } else {
+                alert("Please fill out both the Title and URL fields.");
+            }
+        }
+
+        // Initial setup run
+        renderLinks();
+    </script>
+</body>
+</html>
